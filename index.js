@@ -63,6 +63,15 @@ export default {
       } catch (error) { return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { status: 500, headers: corsHeaders }); }
     }
 
+    // ५. POST /verify-admin (पासवर्ड चेक करण्यासाठी)
+    if (request.method === "POST" && url.pathname === "/verify-admin") {
+      if (request.headers.get("x-admin-pass") === ADMIN_PASSWORD) {
+        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      } else {
+        return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड!" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    }
+    
     return new Response("API Running! 🚀", { headers: corsHeaders });
   }
 };

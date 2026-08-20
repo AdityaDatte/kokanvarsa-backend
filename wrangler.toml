@@ -1,3 +1,8 @@
 name = "kokanvarsa-backend"
 main = "index.js"
 compatibility_date = "2026-08-20"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kokanvarsa-db"
+database_id = "58476302-a854-4cba-bbd8-2f8af47eb9c8"

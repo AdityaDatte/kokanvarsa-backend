@@ -45,8 +45,8 @@ export default {
       try {
         const body = await request.json();
         await env.DB.prepare(
-          "INSERT INTO products (name, price, image_url, stock_status, unit) VALUES (?, ?, ?, ?, ?)"
-        ).bind(body.name, body.price, body.image_url, body.stock_status, body.unit || "नग").run();
+  "INSERT INTO products (name, price, image_url, stock_status, unit, category) VALUES (?, ?, ?, ?, ?, ?)"
+).bind(body.name, body.price, body.image_url, body.stock_status, body.unit || "नग", body.category || "All").run();
         return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       } catch (error) { return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { status: 500, headers: corsHeaders }); }
     }

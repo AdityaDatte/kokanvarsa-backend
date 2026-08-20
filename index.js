@@ -71,7 +71,20 @@ export default {
         return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड!" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
     }
-    
+    // ६. PUT /edit-product (प्रॉडक्टची माहिती अपडेट करण्यासाठी)
+    if (request.method === "PUT" && url.pathname === "/edit-product") {
+      if (request.headers.get("x-admin-pass") !== ADMIN_PASSWORD) {
+        return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड!" }), { status: 401, headers: corsHeaders });
+      }
+      try {
+        const body = await request.json();
+        await env.DB.prepare(
+          "UPDATE products SET name = ?, price = ?, unit = ?, category = ?, image_url = ? WHERE id = ?"
+        ).bind(body.name, body.price, body.unit, body.category, body.image_url, body.id).run();
+        
+        return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      } catch (error) { return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { status: 500, headers: corsHeaders }); }
+    }
     return new Response("API Running! 🚀", { headers: corsHeaders });
   }
 };

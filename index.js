@@ -3,13 +3,16 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, x-admin-pass", // इथे x-admin-pass ॲड केला
     };
 
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
     const url = new URL(request.url);
 
-    // १. GET /products (सर्व प्रॉडक्ट्स आणणे)
+    // तुझा सिक्रेट पासवर्ड (हा कुणालाही सांगू नकोस)
+    const ADMIN_PASSWORD = "Radhaa@18"; 
+
+    // १. GET /products (सर्वांसाठी खुले)
     if (request.method === "GET" && url.pathname === "/products") {
       try {
         const { results } = await env.DB.prepare("SELECT * FROM products").all();
@@ -17,7 +20,7 @@ export default {
       } catch (error) { return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { status: 500, headers: corsHeaders }); }
     }
 
-    // २. POST /order (गुगल शीटवर ऑर्डर पाठवणे)
+    // २. POST /order (सर्वांसाठी खुले)
     if (request.method === "POST" && url.pathname === "/order") {
       try {
         const formData = await request.formData();
@@ -34,8 +37,11 @@ export default {
       } catch (error) { return new Response(JSON.stringify({ error: "चूक झाली!" }), { status: 500, headers: corsHeaders }); }
     }
 
-    // ३. POST /add-product (नवीन प्रॉडक्ट + Unit सह)
+    // ३. POST /add-product (फक्त पासवर्ड असलेल्या ॲडमिनसाठी)
     if (request.method === "POST" && url.pathname === "/add-product") {
+      if (request.headers.get("x-admin-pass") !== ADMIN_PASSWORD) {
+        return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड! प्रवेश निषिद्ध." }), { status: 401, headers: corsHeaders });
+      }
       try {
         const body = await request.json();
         await env.DB.prepare(
@@ -45,8 +51,11 @@ export default {
       } catch (error) { return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { status: 500, headers: corsHeaders }); }
     }
 
-    // ४. DELETE /delete-product (प्रॉडक्ट काढून टाकण्यासाठी)
+    // ४. DELETE /delete-product (फक्त पासवर्ड असलेल्या ॲडमिनसाठी)
     if (request.method === "DELETE" && url.pathname.startsWith("/delete-product")) {
+      if (request.headers.get("x-admin-pass") !== ADMIN_PASSWORD) {
+        return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड! प्रवेश निषिद्ध." }), { status: 401, headers: corsHeaders });
+      }
       try {
         const id = url.searchParams.get("id");
         await env.DB.prepare("DELETE FROM products WHERE id = ?").bind(id).run();

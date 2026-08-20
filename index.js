@@ -72,6 +72,7 @@ export default {
       }
     }
     // ६. PUT /edit-product (प्रॉडक्टची माहिती अपडेट करण्यासाठी)
+    // ६. PUT /edit-product (प्रॉडक्टची माहिती अपडेट करण्यासाठी)
     if (request.method === "PUT" && url.pathname === "/edit-product") {
       if (request.headers.get("x-admin-pass") !== ADMIN_PASSWORD) {
         return new Response(JSON.stringify({ error: "चुकीचा पासवर्ड!" }), { status: 401, headers: corsHeaders });

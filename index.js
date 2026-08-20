@@ -71,3 +71,24 @@ export default {
     });
   }
 };
+
+// ३. नवीन API: ॲडमिन पॅनेलमधून डेटाबेसमध्ये प्रॉडक्ट टाकण्यासाठी (POST /add-product)
+    if (request.method === "POST" && url.pathname === "/add-product") {
+      try {
+        const body = await request.json();
+        
+        // D1 डेटाबेसमध्ये नवीन प्रॉडक्टची नोंद करणे
+        await env.DB.prepare(
+          "INSERT INTO products (name, price, image_url, stock_status) VALUES (?, ?, ?, ?)"
+        ).bind(body.name, body.price, body.image_url, body.stock_status).run();
+        
+        return new Response(JSON.stringify({ success: true, message: "प्रॉडक्ट डेटाबेसमध्ये सेव्ह झाले!" }), { 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: "डेटाबेस एरर!" }), { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        });
+      }
+    }

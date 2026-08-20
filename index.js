@@ -2,10 +2,9 @@ export default {
   async fetch(request, env, ctx) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, x-admin-pass", // इथे x-admin-pass ॲड केला
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS", // इथे PUT असायलाच हवा
+      "Access-Control-Allow-Headers": "Content-Type, x-admin-pass",
     };
-
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
     const url = new URL(request.url);
 
